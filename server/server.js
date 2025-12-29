@@ -12,30 +12,19 @@ const PORT = process.env.PORT || 5000;
 
 const cors = require("cors");
 
+// ✅ MUST be at the TOP, before routes
 app.use(
   cors({
-    origin: function (origin, callback) {
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "https://ak-taskloop.vercel.app",
-      ];
-
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: "https://ak-taskloop.vercel.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// ✅ Explicit preflight handling (THIS IS THE KEY)
 app.options("*", cors());
+
 
 // Routes
 app.use('/api/auth', authRoutes);
