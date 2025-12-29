@@ -16,7 +16,7 @@ export default function Login() {
     setError('');
 
     try {
-      // Sign in with Google popup
+      // Sign in with Google popup (Firebase handles OAuth internally - no CORS!)
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
@@ -27,15 +27,32 @@ export default function Login() {
       const response = await authAPI.verifyGoogleToken(idToken);
 
       if (response.success) {
-        // Store user data in localStorage
+        // Store user data and token in localStorage
         localStorage.setItem('user', JSON.stringify(response.user));
+        if (response.token) {
+          localStorage.setItem('sessionToken', response.token);
+        }
         
         // Navigate to dashboard
         navigate('/dashboard');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.message || 'Failed to login. Please try again.');
+      
+      // Better error handling
+      let errorMessage = 'Failed to login. Please try again.';
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = 'Login cancelled. Please try again.';
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Authentication failed. Please try again.';
+      } else if (error.response?.status >= 500) {
+        errorMessage = 'Server error. Please try again later.';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

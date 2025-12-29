@@ -1,9 +1,25 @@
 import { auth, db } from '../config/firebase.js';
+import jwt from 'jsonwebtoken';
 
 /**
- * Verify Google Firebase token
- * This endpoint receives the Firebase ID token from frontend
- * and verifies it using Firebase Admin SDK
+ * Initiate Google OAuth - Redirect to Google login
+ */
+export const initiateGoogleOAuth = (req, res) => {
+  const frontendURL = process.env.FRONTEND_URL || 'https://ak-taskloop.vercel.app';
+  
+  // Store frontend URL in session/cookie for callback
+  const state = Buffer.from(JSON.stringify({ 
+    returnTo: frontendURL,
+    timestamp: Date.now()
+  })).toString('base64');
+
+  // Since we're using Firebase Auth, we redirect to a page that will handle Firebase popup
+  // This is a hybrid approach - redirect to frontend which initiates Firebase popup
+  res.redirect(`${frontendURL}/login?oauth=true&state=${state}`);
+};
+
+/**
+ * Verify Google Firebase token (existing method - keep for Firebase Web SDK flow)
  */
 export const verifyGoogleToken = async (req, res) => {
   try {
@@ -46,10 +62,18 @@ export const verifyGoogleToken = async (req, res) => {
       });
     }
 
+    // Generate session token
+    const sessionToken = jwt.sign(
+      { uid, email },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '7d' }
+    );
+
     res.status(200).json({
       success: true,
       message: 'Authentication successful',
-      user: userData
+      user: userData,
+      token: sessionToken
     });
 
   } catch (error) {

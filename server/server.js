@@ -10,20 +10,24 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const cors = require("cors");
+// CORS Configuration
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://ak-taskloop.vercel.app',
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-// ✅ MUST be at the TOP, before routes
-app.use(
-  cors({
-    origin: "https://ak-taskloop.vercel.app",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// Handle preflight requests
+app.options('*', cors());
 
-// ✅ Explicit preflight handling (THIS IS THE KEY)
-app.options("*", cors());
+// Body parsers
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 // Routes
