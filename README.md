@@ -1,399 +1,512 @@
-# 🎯 Task Management Web Application
+# 🎯 TaskLoop - Task Management Application
 
-A modern, full-stack task management application built with **Firebase Authentication**, **Firestore Database**, **React (Vite)**, and **Express Backend**. This project demonstrates industry-standard architecture with secure authentication, real-time database operations, and a beautiful, responsive UI.
+A simple and beautiful task manager to organize your work. Create tasks, set priorities, search and filter them easily. Works on any device with Google login.
 
 ![Tech Stack](https://img.shields.io/badge/React-18.2-61DAFB?logo=react)
 ![Firebase](https://img.shields.io/badge/Firebase-10.7-FFCA28?logo=firebase)
 ![Express](https://img.shields.io/badge/Express-4.18-000000?logo=express)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.3-06B6D4?logo=tailwindcss)
+![Deployed](https://img.shields.io/badge/Status-Live-success?logo=vercel)
 
 ---
 
-## 🌟 Features
+## 🎯 The Problem
 
-✅ **Google OAuth Authentication** - Secure sign-in with Firebase Auth  
-✅ **Full CRUD Operations** - Create, Read, Update, Delete tasks  
-✅ **Task Status Management** - Pending, In Progress, Completed  
-✅ **Real-time Dashboard** - View all tasks with filters and statistics  
-✅ **Protected Routes** - Backend verification with Firebase Admin SDK  
-✅ **Responsive Design** - Works on all devices  
-✅ **Smooth Animations** - Framer Motion for delightful UX  
-✅ **Modern UI** - Tailwind CSS with custom components  
+Managing tasks can be difficult when you have too many things to do:
+- 📋 Hard to know which tasks are most important
+- 🔍 Can't find specific tasks quickly
+- 📱 Need to access your tasks from different devices
+- 🔐 Want to keep your personal data secure
+- 🎨 Need a simple and pleasant interface
+
+**TaskLoop** helps you organize your tasks with priorities, search through them easily, and access them from anywhere with Google login.
+
+---
+
+## 💡 What You Can Do
+
+With TaskLoop, you can:
+- ✅ Create tasks with titles, descriptions, and deadlines
+- 🏷️ Set priority levels (High, Medium, Low) to know what's important
+- 🔍 Search for tasks by typing keywords
+- 📊 Filter tasks by status (Pending, In Progress, Completed) or priority
+- 🌓 Switch between light and dark mode
+- 📱 Use it on your phone, tablet, or computer
+- 🔐 Login securely with your Google account
+
+---
+
+## 🛠️ Technologies Used
+
+### Frontend (What You See)
+- **React** - For building the user interface
+- **Tailwind CSS** - For styling and colors
+- **Framer Motion** - For smooth animations
+- **Firebase** - For Google login
+
+### Backend (Server)
+- **Node.js & Express** - Server to handle requests
+- **Firebase** - Database to store your tasks
+- **JWT** - To keep you logged in securely
+
+### Hosting
+- **Vercel** - Hosts the website (frontend)
+- **Render** - Hosts the server (backend)
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────┐
-│  React Frontend │ ─── Google Login ──▶ Firebase Auth
-└─────────────────┘                            │
-        │                                      │
-        │ ID Token                             │
-        ▼                                      │
-┌─────────────────┐                           │
-│  Express API    │ ◀─── Verify Token ────────┘
-└─────────────────┘
-        │
-        │ Firebase Admin SDK
-        ▼
-┌─────────────────┐
-│    Firestore    │
-└─────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                     USER INTERACTION                          │
+└──────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌──────────────────────────────────────────────────────────────┐
+│                    REACT FRONTEND (Vercel)                    │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │  Components: Dashboard, CreateTask, EditTask, Login    │  │
+│  │  Features: Search, Filter, Sort, Dark Mode             │  │
+│  │  State: React Hooks + localStorage                     │  │
+│  └────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────┘
+       How It Works
+
 ```
+┌─────────────────────┐
+│   You (Browser)     │
+└─────────────────────┘
+          │
+          ▼
+┌─────────────────────┐
+│   React Website     │ ──Login with Google──► Firebase
+│   (Vercel)          │
+└─────────────────────┘
+          │
+          │ Create/Edit/Delete Tasks
+          ▼
+┌─────────────────────┐
+│   Express Server    │
+│   (Render)          │
+└─────────────────────┘
+          │
+          ▼
+┌─────────────────────┐
+│   Firebase Database │ (Stores your tasks)
+└─────────────────────┘
+```
+
+**Simple Flow:**
+1. You login with Google
+2. Create or view your tasks
+3. Server saves them to the database
+4. Your tasks are available on any device
 
 ---
 
-## 📁 Project Structure
+## 📁 Project Files
 
 ```
 Task 3/
+├── 📂 server/                    # Backend code
+│   ├── config/                   # Firebase setup
+│   ├── controllers/              # Logic for login and tasks
+│   ├── routes/                   # API endpoints
+│   ├── middleware/               # Security checks
+│   └── server.js                 # Main server file
 │
-├── server/                     # Backend (Express + Firebase Admin)
-│   ├── config/
-│   │   └── firebase.js         # Firebase Admin SDK setup
-│   ├── controllers/
-│   │   ├── authController.js   # Authentication logic
-│   │   └── taskController.js   # Task CRUD operations
-│   ├── routes/
-│   │   ├── authRoutes.js       # Auth endpoints
-│   │   └── taskRoutes.js       # Task endpoints
-│   ├── middleware/
-│   │   └── authMiddleware.js   # Token verification
-│   ├── server.js               # Express server
-│   ├── package.json
-│   └── .env.example
-│
-└── client/                     # Frontend (React + Vite)
+└── 📂 client/                    # Frontend code
     ├── src/
-    │   ├── components/
-    │   │   ├── Navbar.jsx      # Navigation bar
-    │   │   ├── TaskCard.jsx    # Task display card
-    │   │   └── Loader.jsx      # Loading component
-    │   ├── pages/
-    │   │   ├── Login.jsx       # Login page
-    │   │   ├── Dashboard.jsx   # Main dashboard
-    │   │   ├── CreateTask.jsx  # Create task page
-    │   │   └── EditTask.jsx    # Edit task page
-    │   ├── services/
-    │   │   └── api.js          # API service layer
-    │   ├── firebase.js         # Firebase client config
-    │   ├── App.jsx             # Main app component
-    │   ├── main.jsx            # Entry point
-    │   └── index.css           # Global styles
-    ├── package.json
-    └── .env.example
+    │   ├── components/           # Reusable parts (Navbar, TaskCard)
+    │   ├── pages/                # Main pages (Login, Dashboard, etc.)
+    │   ├── services/             # API connection
+    │   └── firebase.js           # Firebase config
+    │
+    └── package.json              # Dependencies
 ```
 
 ---
 
-## 🚀 Quick Start
+## ✨ Main Features
 
 ### Prerequisites
 
-- **Node.js** (v16 or higher)
-- **npm** or **yarn**
-- **Firebase Account** (with project created)
-- **Git**
+Before you begin, ensure you have:
+- ✅ **Node.js** v16 or higher ([Download](https://nodejs.org))
+- ✅ **npm** or **yarn** package manager
+- ✅ **Git** for version control
+- ✅ **Firebase Account** ([Create Free Account](https://firebase.google.com))
+- ✅ **Code Editor** (VS Code recommended)
 
-### 1️⃣ Clone the Repository
+### Step 1: Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/abhishiktha-15/Task-Manager.git
 cd "Task 3"
 ```
 
-### 2️⃣ Firebase Setup
+### Step 2: Firebase Project Setup
 
 #### A. Create Firebase Project
-
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Click **"Add Project"**
-3. Enter project name and follow setup steps
-4. Enable **Google Analytics** (optional)
+1. Navigate to [Firebase Console](https://console.firebase.google.com/)
+2. Click **"Create a project"**
+3. Enter project name (e.g., "TaskLoop")
+4. Enable/disable Google Analytics (optional)
+5. Click **"Create project"**
 
 #### B. Enable Google Authentication
+1. In your Firebase project, go to **Authentication**
+2. ClMain Features
 
-1. In Firebase Console, go to **Authentication** → **Sign-in method**
-2. Enable **Google** provider
-3. Add your email as authorized domain
+### 1. 🎨 Priority Levels
+- **High** 🔴 - Very important tasks
+- **Medium** 🟡 - Moderately important
+- **Low** 🟢 - Can wait
+- Easy to see with colors
 
-#### C. Create Firestore Database
+### 2. 🔍 Search and Filter
+- Type to search in task titles or descriptions
+- Filter by status (Pending, In Progress, Done)
+- Filter by priority (High, Medium, Low)
+- Sort tasks by deadline or when you created them
 
-1. Go to **Firestore Database** → **Create database**
-2. Start in **production mode**
-3. Choose location closest to you
+### 3. 📊 Dashboard
+- See how many tasks you have
+- Check pending, in-progress, and completed counts
+- All your tasks in one place
 
-#### D. Generate Service Account Key (for Backend)
+### 4. 🌓 Dark Mode
+- Switch between light and dark theme
+- Easier on the eyes at night
+- Your choice is remembered
 
-1. Go to **Project Settings** → **Service Accounts**
-2. Click **"Generate new private key"**
-3. Save the JSON file as `serviceAccountKey.json`
-4. Move it to `server/config/` directory
-
-#### E. Get Web App Config (for Frontend)
-
-1. Go to **Project Settings** → **General**
-2. Scroll to **"Your apps"** → Click **Web** icon
-3. Register your app
-4. Copy the configuration object
-
----
-
-### 3️⃣ Backend Setup
-
-```bash
-cd server
-npm install
-```
-
-Create `.env` file (copy from `.env.example`):
-
-```env
+### 5. 🔐 Secure Login
+- Login with your Google account
+- No need to create passwords
+- Your data is private and secure
 PORT=5000
 NODE_ENV=development
 FIREBASE_SERVICE_ACCOUNT_PATH=./config/serviceAccountKey.json
+JWT_SECRET=your_super_secret_jwt_key_here_change_this
 ```
 
-Start the server:
+**Important**: Change `JWT_SECRET` to a random string. Generate one:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Start the backend server:
 
 ```bash
 npm run dev
 ```
 
-Server runs on **http://localhost:5000**
+✅ Server should be running at **http://localhost:5000**
 
----
+### Step 4: Frontend Setup
 
-### 4️⃣ Frontend Setup
+Open a new terminal window:
 
 ```bash
 cd client
 npm install
 ```
 
-Create `.env` file (copy from `.env.example`):
+Create `.env` file in `client/` directory using your Firebase config:
 
 ```env
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-VITE_API_URL=http://localhost:5000/api
+# Firebase Configuration (from Step 2D)
+VITE_FIREBASE_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789012
+VITE_FIREBASE_APP_ID=1:123456789012:web:abcdef123456
+
+# Backend API URL
+VITE_API_URL=http://localhost:5000
 ```
 
-Start the development server:
+Start the frontend development server:
 
 ```bash
 npm run dev
 ```
 
-Frontend runs on **http://localhost:5173**
+✅ Frontend should be running at **http://localhost:5173**
+
+### Step 5: Test the Application
+
+1. Open browser to **http://localhost:5173**
+2. Click **"Continue with Google"**
+3. Sign in with your Google account
+4. Create your first task!
 
 ---
 
-## 🔐 API Endpoints
+## 🌐 Deployed Links
 
-### Authentication
+### 🚀 Live Application
+**Frontend (Vercel)**: [https://ak-taskloop.vercel.app](https://ak-taskloop.vercel.app)
 
-| Method | Endpoint       | Description              | Auth Required |
-|--------|----------------|--------------------------|---------------|
-| POST   | /api/auth/google | Verify Firebase ID token | No            |
-| GET    | /api/auth/me     | Get current user        | Yes           |
+**Backend API (Render)**: [https://task-manager-ih6v.onrender.com](https://task-manager-ih6v.onrender.com)
 
-### Tasks
+### 📦 Repository
+**GitHub**: [abhishiktha-15/Task-Manager](https://github.com/abhishiktha-15/Task-Manager)
 
-| Method | Endpoint          | Description          | Auth Required |
-|--------|-------------------|----------------------|---------------|
-| POST   | /api/tasks        | Create new task      | Yes           |
-| GET    | /api/tasks        | Get all user tasks   | Yes           |
-| GET    | /api/tasks/:id    | Get task by ID       | Yes           |
-| PUT    | /api/tasks/:id    | Update task          | Yes           |
-| DELETE | /api/tasks/:id    | Delete task          | Yes           |
+### 🧪 Test the Live App
+1. Visit the deployed frontend link
+2. Sign in with any Google account
+3. Create, edit, and manage tasks
+4. Test filters, search, and dark mode
+5. Tasks are stored in Cloud Firestore
+
+**Note**: Backend on Render free tier may have cold starts (15-30s initial load)
 
 ---
 
-## 📊 Database Structure
+## � Database Schema
 
-### Users Collection (`users`)
+### Firestore Collections
 
-```json
+#### `users` Collection
+Stores authenticated user information:
+
+```javascript
 {
-  "uid": "firebase_user_id",
-  "name": "John Doe",
-  "email": "john@example.com",
-  "photo": "https://example.com/photo.jpg",
-  "createdAt": "2024-01-01T00:00:00.000Z",
-  "lastLogin": "2024-01-15T10:30:00.000Z"
+  "uid": "firebase_user_id_123",           // Firebase UID (document ID)
+  "name": "John Doe",                      // Display name from Google
+  "email": "john.doe@example.com",         // User email
+  "photo": "https://lh3.googleusercontent.com/...",  // Profile picture
+  "createdAt": Timestamp,                  // Account creation
+  "lastLogin": Timestamp                   // Last authentication
 }
 ```
 
-### Tasks Collection (`tasks`)
+#### `tasks` Collection
+Stores all user tasks:
 
+```javascript
+{
+  "title": "Complete project documentation",        // Task title (required)
+  "description": "Write comprehensive README...",   // Detailed description
+  "status": "In Progress",                          // Pending | In Progress | Completed
+  "priority": "High",                               // High | Medium | Low
+  "deadline": "2025-01-15",                         // YYYY-MM-DD format
+  "userId": "firebase_user_id_123",                 // Owner reference
+  "createdAt": Timestamp,                           // Creation timestamp
+  "updatedAt": Timestamp                            // Last modification
+}
+```
+
+**Firestore Indexes**: Automatically created by Firebase for efficient querying by `userId`.
+
+---
+
+## 🔐 API Endpoints Reference
+
+### Authentication Endpoints
+
+| Method | Endpoint | Description | Auth Required | Request Body |
+|--------|----------|-------------|---------------|--------------|
+| `POST` | `/api/auth/google` | Verify Firebase ID token & create session | ❌ | `{ idToken: string }` |
+| `GET` | `/api/auth/me` | Get current user details | ✅ | - |
+
+**Example Request:**
+```bash
+curl -X POST https://task-manager-ih6v.onrender.com/api/auth/google \
+  -H "Content-Type: application/json" \
+  -d '{"idToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."}'
+```
+
+**Example Response:**
 ```json
 {
-  "title": "Complete project documentation",
-  "description": "Write comprehensive README and setup guides",
-  "status": "In Progress",
-  "userId": "firebase_user_id",
-  "createdAt": "2024-01-15T10:00:00.000Z",
-  "updatedAt": "2024-01-15T12:00:00.000Z"
+  "sessionToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "uid": "abc123",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "photo": "https://..."
+  }
+}
+```Live Demo
+
+### Try It Now! 🚀
+**Website**: [https://ak-taskloop.vercel.app](https://ak-taskloop.vercel.app)
+
+**Code**: [GitHub Repository](https://github.com/abhishiktha-15/Task-Manager)
+
+Just click the link, login with Google, and start managing your tasks!
+
+**Note**: First load might take 30 seconds (server wakes up
+    "title": "Fix navigation bug",
+    "description": "Update routing logic",
+    "status": "Pending",
+    "priority": "High",
+    "deadline": "2025-01-20"
+  }'
+```
+
+**Response:**
+```json
+{
+  "id": "task123",
+  "title": "Fix navigation bug",
+  "status": "Pending",
+  "priority": "High",
+  "deadline": "2025-01-20",
+  "userId": "user123",
+  "createdAt": "2025-01-15T10:00:00.000Z",
+  "updatedAt": "2025-01-15T10:00:00.000Z"
 }
 ```
 
 ---
 
-## 🎨 Tech Stack Details
+## 🎨 User Interface Guide
 
-### Frontend
-- **React 18** - UI framework
-- **Vite** - Build tool
-- **Tailwind CSS** - Styling
-- **Framer Motion** - Animations
-- **React Router DOM** - Routing
-- **Axios** - HTTP client
-- **Firebase SDK** - Authentication
-- **Lucide React** - Icons
+### 1. Login Page
+- Clean, centered design with gradient background
+- **"Continue with Google"** button with Google logo
+- Firebase popup authentication
+- Automatic redirect to Dashboard on success
+- Error handling for failed login attempts
 
-### Backend
-- **Node.js** - Runtime
-- **Express** - Web framework
-- **Firebase Admin SDK** - Auth & Database
-- **CORS** - Cross-origin support
-- **dotenv** - Environment variables
+### 2. Dashboard (Main Interface)
 
----
+**Top Section:**
+- **Statistics Cards**: Display total, pending, in-progress, and completed task counts
+- **Theme Toggle**: Switch between light and dark mode
+- **Logout Button**: End session securely
 
-## 🔒 Security Features
+**Filter Controls:**
+- **Status Filter**: Buttons for All, Pending, In Progress, Completed
+- **Priority Filter**: High 🔴, Medium 🟡, Low 🟢 with color coding
+- **Search Bar**: Real-time search across titles and descriptions
+- **Sort Dropdown**: By Deadline, Created Date, or Priority
 
-✅ Firebase ID token verification  
-✅ Protected API routes with middleware  
-✅ User-specific data isolation  
-✅ CORS configuration  
-✅ Environment variable protection  
-
----
-
-## 🎯 Project Highlights
-
-This project demonstrates:
-
-- ✅ **Full-stack development** with modern tools
-- ✅ **Firebase integration** (Auth + Firestore)
-- ✅ **RESTful API design** with Express
-- ✅ **Protected routes** on both frontend and backend
-- ✅ **Responsive UI/UX** with animations
-- ✅ **Clean code architecture** and folder structure
-- ✅ **Production-ready** configuration
-
----
-
-## 📝 Usage Guide
+**Task Display:**
+- **Grid Layout**: Responsive cards (1-3 columns based on screen size)
+- **Task Cards**: Show title, description, status badge, priority badge, deadline
+- **� How to Use
 
 ### 1. Login
-- Click **"Continue with Google"**
-- Select your Google account
-- Automatically redirected to Dashboard
+- Click "Continue with Google"
+- Choose your Google account
+- You're in!
 
-### 2. Create Task
-- Click **"Create Task"** button
-- Fill in title, description, and status
-- Click **"Create Task"** to save
+### 2. Create a Task
+- Click "Create Task" button
+- Enter title and description
+- Choose priority (High/Medium/Low)
+- Set a deadline (optional)
+- Click "Create Task"
 
 ### 3. Manage Tasks
-- View all tasks on Dashboard
-- Filter by status (All, Pending, In Progress, Completed)
-- Edit task by clicking edit icon
-- Delete task with confirmation modal
+- See all your tasks on the dashboard
+- Use filters to find tasks by status or priority
+- Search by typing keywords
+- Click edit icon ✏️ to update a task
+- Click delete icon 🗑️ to remove a task
 
-### 4. Logout
-- Click **Logout** button in navbar
-- Redirected to login page
+### 4. Other Features
+- Toggle dark mode with the moon/sun icon
+- Sort tasks by deadline or creation date
+- See task statistics at the top
 
----
+## 🚀 Deployment Guide
 
-## 🛠️ Development Tips
+### Frontend Deployment (Vercel)
 
-### Testing Backend APIs
+1. **Push code to GitHub**:
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin master
+   ```
 
-Use **Postman** or **cURL**:
+2. **Connect to Vercel**:
+   - Visit [vercel.com](https://vercel.com)
+   - Click **"Import Project"**
+   - Select your GitHub repository
+   - Configure settings:
+     - **Framework**: Vite
+     - **Build Command**: `npm run build`
+     - **Output Directory**: `dist`
+     - **Install Command**: `npm install`
 
-```bash
-# Health check
-curl http://localhost:5000/health
+3. **Add Environment Variables**:
+   In Vercel dashboard → Settings → Environment Variables:
+   ```
+   VITE_FIREBASE_API_KEY=your_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   VITE_API_URL=https://your-backend.onrender.com
+   ```
 
-# Get tasks (requires auth token)
-curl -H "Authorization: Bearer YOUR_FIREBASE_TOKEN" \
-     http://localhost:5000/api/tasks
-```
+4. **Deploy**: Click **"Deploy"** and wait for build to complete
 
-### Firebase Emulator (Optional)
+5. **Update Firebase Authorized Domains**:
+   - Go to Firebase Console → Authentication → Settings
+   - Add your Vercel domain (e.g., `your-app.vercel.app`)
 
-For local development without using production Firebase:
+### Backend Deployment (Render)
 
-```bash
-firebase emulators:start
-```
+Summary
 
----
+TaskLoop is a simple task manager that helps you organize your work. It's built with React for the website, Express for the server, and Firebase for login and database.
 
-## 📦 Deployment
+### What Makes It Special
+- ✅ Easy to use with Google login
+- ✅ Priority levels to know what's important
+- ✅ Search and filter to find tasks quickly
+- ✅ Works on phone, tablet, and computer
+- ✅ Dark mode for night-time use
+- ✅ Your tasks are saved in the cloud
 
-### Backend (Render/Railway/Heroku)
+### What I Learned
+- Building a complete web application from scratch
+- Connecting frontend and backend
+- Using Firebase for authentication and database
+- Making websites look good with Tailwind CSS
+- Deploying apps to the internet
 
-1. Set environment variables in platform
-2. Use `FIREBASE_SERVICE_ACCOUNT` as JSON string
-3. Deploy from GitHub repository
+### Future Ideas
+- 📧 Send email reminders for deadlines
+- 👥 Share tasks with teammates
+- 📎 Attach files to tasks
+- 📱 Make it work offline
+- 📊 Show charts and statistics� Developer
 
-### Frontend (Vercel/Netlify)
-
-1. Connect GitHub repository
-2. Set build command: `npm run build`
-3. Set output directory: `dist`
-4. Add environment variables
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
+**Abhishiktha**  
+GitHub: [@abhishiktha-15](https://github.com/abhishiktha-15)
 
 ---
 
 ## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source (MIT License). Feel free to use and modify it!
 
 ---
 
-## 👨‍💻 Author
+## 🙏 Credits
 
-Created as an internship task demonstrating modern web development practices.
-
----
-
-## 🙏 Acknowledgments
-
-- Firebase Documentation
-- React Documentation
-- Tailwind CSS
-- Framer Motion
-- Lucide Icons
+Built with these awesome tools:
+- React - For the user interface
+- Firebase - For login and database
+- Tailwind CSS - For styling
+- Express - For the server
+- Vercel & Render - For hosting
 
 ---
 
-## 📞 Support
+<div align="center">
 
-For issues or questions, please open an issue on GitHub or contact the maintainer.
+**⭐ If you like this project, give it a star on [GitHub](https://github.com/abhishiktha-15/Task-Manager)!**
 
----
-
-**Happy Coding! 🚀**
+[🚀 Try Live Demo](https://ak-taskloop.vercel.app
