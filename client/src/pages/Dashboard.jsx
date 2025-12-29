@@ -306,9 +306,9 @@ export default function Dashboard() {
               No tasks found
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg">
-              {filter === 'All' 
+              {filter === 'All' && tasks.length === 0
                 ? 'Create your first task to get started!' 
-                : `No tasks with status "${filter}"`}
+                : `No tasks match the current filters`}
             </p>
             <motion.button
               onClick={() => navigate('/create-task')}
@@ -317,7 +317,7 @@ export default function Dashboard() {
               whileTap={{ scale: 0.95 }}
             >
               <Plus className="w-6 h-6" />
-              <span>Create Your First Task</span>
+              <span>{tasks.length === 0 ? 'Create Your First Task' : 'Create New Task'}</span>
             </motion.button>
           </motion.div>
         ) : (
