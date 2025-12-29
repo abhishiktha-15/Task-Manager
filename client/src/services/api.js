@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { auth } from '../firebase';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://task-manager-ih6v.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://task-manager-ih6v.onrender.com';
 
 // Create axios instance
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: `${API_URL}/api`,
   headers: {
     'Content-Type': 'application/json'
   }
